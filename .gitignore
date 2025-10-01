@@ -18,4 +18,5 @@ venv/
 # Project specific
 *.log
 output/
+!output/energy_mix.png
 *.tmp
