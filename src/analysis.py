@@ -1,54 +1,45 @@
 """
-California Energy Generation Analysis - Data Analysis Module
+California Energy Analysis - Simple Version
 
-This module provides comprehensive analysis of California's electricity
-generation data from 2014-2024, including statistical analysis,
-trend identification, and insights generation.
+This module provides basic analysis of California's electricity generation data.
+It loads CSV data and calculates simple statistics.
 
-Author: California Energy Analysis Project
-Date: October 2025
+Author: California Energy Project
 """
 
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
 import json
 
 
 class CaliforniaEnergyAnalyzer:
     """
-    A comprehensive analyzer for California electricity generation data.
-
-    This class handles data loading, statistical analysis, trend detection,
-    and insights generation for the EIA California energy dataset.
+    A simple analyzer for California electricity generation data.
     """
 
-    def __init__(self, data_path: str = "data/eia_california_generation_annual.csv"):
+    def __init__(self, data_path="data/eia_california_generation_annual.csv"):
         """
-        Initialize the analyzer with data path.
+        Initialize the analyzer.
 
         Args:
-            data_path (str): Path to the EIA data file
+            data_path (str): Path to the data file
         """
         self.data_path = Path(data_path)
         self.raw_data = None
         self.processed_data = None
         self.analysis_results = {}
 
-    def load_data(self) -> pd.DataFrame:
+    def load_data(self):
         """
         Load the raw EIA data from CSV file.
-
-        Returns:
-            pd.DataFrame: Raw dataframe
         """
-        print("🔄 Loading California energy data from CSV...")
+        print("Loading California energy data...")
 
-        # Read the CSV file, handling the specific EIA format
+        # Read the CSV file
         df = pd.read_csv(self.data_path, header=None)
 
-        # Find the row with actual data (where years start)
+        # Find the row with years (where 2014 appears)
         data_start_row = None
         for i, row in df.iterrows():
             if str(row.iloc[3]).strip() == '2014':
@@ -56,16 +47,17 @@ class CaliforniaEnergyAnalyzer:
                 break
 
         if data_start_row is None:
-            raise ValueError("Could not find data start row in CSV file")
+            print("Error: Could not find data in CSV file")
+            return None
 
-        # Extract years from header
+        # Get years from header
         header_row = df.iloc[data_start_row - 1]
         years = []
         for col in range(3, len(header_row)):
             if pd.notna(header_row.iloc[col]) and str(header_row.iloc[col]).strip().isdigit():
                 years.append(int(header_row.iloc[col]))
 
-        # Extract data rows
+        # Get data rows
         data_rows = []
         categories = []
         for i in range(data_start_row, len(df)):
@@ -94,58 +86,45 @@ class CaliforniaEnergyAnalyzer:
         df_data.index.name = 'Year'
 
         self.raw_data = df_data
-        print(f"✅ Loaded data: {df_data.shape[0]} years, {df_data.shape[1]} categories")
-
+        print(f"Loaded data: {df_data.shape[0]} years, {df_data.shape[1]} categories")
         return df_data
 
-    def process_data(self) -> pd.DataFrame:
+    def process_data(self):
         """
         Process raw data into analysis-ready format.
-
-        Returns:
-            pd.DataFrame: Processed dataframe
         """
         if self.raw_data is None:
             self.load_data()
 
-        print("🔄 Processing data for analysis...")
+        print("Processing data...")
 
-        # Convert to long format for easier analysis
+        # Convert to long format
         processed = self.raw_data.reset_index().melt(
             id_vars=['Year'],
             var_name='Category',
             value_name='Generation_MWh'
         )
 
-        # Add calculated columns
+        # Convert year to integer
         processed['Year'] = processed['Year'].astype(int)
 
-        # Calculate totals by year
+        # Calculate yearly totals
         yearly_totals = processed.groupby('Year')['Generation_MWh'].sum()
         processed['Total_Yearly_Generation'] = processed['Year'].map(yearly_totals)
         processed['Percentage'] = (processed['Generation_MWh'] / processed['Total_Yearly_Generation']) * 100
 
-        # Calculate year-over-year changes
-        processed = processed.sort_values(['Category', 'Year'])
-        processed['YoY_Change_MWh'] = processed.groupby('Category')['Generation_MWh'].diff()
-        processed['YoY_Change_Percent'] = processed.groupby('Category')['Generation_MWh'].pct_change() * 100
-
         self.processed_data = processed
-        print(f"✅ Processed {len(processed)} data points")
-
+        print(f"Processed {len(processed)} data points")
         return processed
 
-    def calculate_summary_statistics(self) -> Dict:
+    def calculate_summary_statistics(self):
         """
-        Calculate comprehensive summary statistics.
-
-        Returns:
-            Dict: Summary statistics organized by category and metric
+        Calculate basic summary statistics.
         """
         if self.processed_data is None:
             self.process_data()
 
-        print("📊 Calculating summary statistics...")
+        print("Calculating statistics...")
 
         stats = {
             'overall': {},
@@ -181,7 +160,7 @@ class CaliforniaEnergyAnalyzer:
             }
             stats['by_category'][category] = cat_stats
 
-        # Trend analysis
+        # Simple trend analysis
         first_year = self.processed_data['Year'].min()
         last_year = self.processed_data['Year'].max()
 
@@ -197,17 +176,14 @@ class CaliforniaEnergyAnalyzer:
         self.analysis_results['statistics'] = stats
         return stats
 
-    def generate_insights(self) -> Dict:
+    def generate_insights(self):
         """
-        Generate key insights from the data.
-
-        Returns:
-            Dict: Organized insights and findings
+        Generate basic insights from the data.
         """
         if 'statistics' not in self.analysis_results:
             self.calculate_summary_statistics()
 
-        print("🔍 Generating insights...")
+        print("Generating insights...")
 
         stats = self.analysis_results['statistics']
         insights = {
@@ -217,20 +193,18 @@ class CaliforniaEnergyAnalyzer:
             'recommendations': []
         }
 
-        # Key findings
+        # Simple key findings
         insights['key_findings'] = [
             f"California's electricity generation grew {stats['trends']['overall_growth_rate']:.1f}% from {stats['trends']['period']}",
             f"Total generation reached {stats['overall']['total_generation_mwh']:,.0f} MWh over the analyzed period",
-            f"The {stats['trends']['dominant_category']} category consistently represented the largest share of generation",
+            f"The {stats['trends']['dominant_category']} category was the largest energy source",
             f"Peak generation occurred in {stats['overall']['peak_year']} with {self.raw_data.loc[stats['overall']['peak_year']].sum():,.0f} MWh"
         ]
 
-        # Category-specific insights
+        # Category insights
         for category, cat_stats in stats['by_category'].items():
             if cat_stats['growth_rate'] > 5:
-                trend = "strong growth"
-            elif cat_stats['growth_rate'] > 0:
-                trend = "moderate growth"
+                trend = "growing"
             elif cat_stats['growth_rate'] > -5:
                 trend = "stable"
             else:
@@ -243,19 +217,17 @@ class CaliforniaEnergyAnalyzer:
                 'total_contribution': cat_stats['total_generation']
             })
 
-        # Notable trends
         insights['notable_trends'] = [
-            "Independent Power Producers showed steady growth throughout the period",
-            "Electric Utility Cogen experienced the most significant decline",
-            "Electric Utility Non-Cogen demonstrated the strongest growth trajectory",
-            "Electric Power remained the dominant category with consistent ~38% share"
+            "Independent Power Producers showed steady growth",
+            "Electric Utility Cogen experienced decline",
+            "Electric Power remained the dominant category"
         ]
 
         self.analysis_results['insights'] = insights
         return insights
 
-    def _calculate_growth_rate(self, category_data: pd.DataFrame) -> float:
-        """Calculate compound annual growth rate for a category."""
+    def _calculate_growth_rate(self, category_data):
+        """Calculate simple growth rate for a category."""
         first_value = category_data['Generation_MWh'].iloc[0]
         last_value = category_data['Generation_MWh'].iloc[-1]
         years = len(category_data)
@@ -264,22 +236,19 @@ class CaliforniaEnergyAnalyzer:
             return ((last_value / first_value) ** (1 / (years - 1)) - 1) * 100
         return 0.0
 
-    def _find_dominant_category(self) -> str:
+    def _find_dominant_category(self):
         """Find the category with highest average share."""
         avg_percentages = self.processed_data.groupby('Category')['Percentage'].mean()
         return avg_percentages.idxmax()
 
-    def _find_most_volatile_category(self) -> str:
+    def _find_most_volatile_category(self):
         """Find the category with highest volatility."""
         volatility = self.processed_data.groupby('Category')['Generation_MWh'].std()
         return volatility.idxmax()
 
-    def export_results(self, output_format: str = 'json') -> None:
+    def export_results(self, output_format='json'):
         """
         Export analysis results to file.
-
-        Args:
-            output_format (str): Export format ('json' or 'csv')
         """
         if not self.analysis_results:
             self.generate_insights()
@@ -298,8 +267,8 @@ class CaliforniaEnergyAnalyzer:
             self.processed_data.to_csv(output_file, index=False)
             print(f"  Data exported to {output_file}")
 
-    def print_analysis_summary(self) -> None:
-        """Print a formatted summary of the analysis."""
+    def print_analysis_summary(self):
+        """Print a simple summary of the analysis."""
         if not self.analysis_results:
             self.generate_insights()
 

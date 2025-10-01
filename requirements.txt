@@ -1,20 +1,12 @@
 # California Energy Generation Analysis - Requirements
-# Core dependencies for the analysis and visualization pipeline
+# Essential packages for basic data analysis
 
 # Data manipulation and analysis
-pandas>=1.5.0
-numpy>=1.21.0
+pandas
+numpy
 
-# Interactive visualizations
-altair>=5.0.0
+# Simple plotting (optional)
+matplotlib
 
-# Static plotting support (optional, for matplotlib-based charts)
-matplotlib>=3.5.0
-
-# Jupyter notebook support (optional)
-jupyter>=1.0.0
-
-# Development and testing (optional)
-pytest>=7.0.0
-black>=22.0.0
-flake8>=5.0.0
+# Jupyter notebook (optional)
+jupyter
