@@ -6,59 +6,6 @@ A comprehensive analysis of California's electricity generation transition, feat
 
 This project analyzes California's electricity generation data from 2014-2024, tracking the evolution of the state's energy mix across different power generation categories. The analysis reveals trends in renewable energy adoption, fossil fuel dependency changes, and overall generation capacity growth.
 
-## Quick Start
-
-### Prerequisites
-- Python 3.8 or higher
-- pip package manager
-
-### Installation
-
-1. Clone the repository
-   ```bash
-   git clone <repository-url>
-   cd california-energy-analysis
-   ```
-
-2. Install dependencies
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Run the complete analysis
-   ```bash
-   python main.py
-   ```
-
-4. View the results
-   ```bash
-   # Open interactive visualizations
-   open output/stacked_area_interactive.html
-
-   # View detailed analysis report
-   open ANALYSIS_REPORT.md
-   ```
-
-### Project Structure
-
-```
-california-energy-analysis/
-├── main.py                           # Main pipeline script
-├── README.md                         # Complete project guide
-├── ANALYSIS_REPORT.md                # Detailed analysis report
-├── requirements.txt                  # Dependencies
-├── .gitignore                       # Git ignore rules
-├── src/                             # Core modules
-│   ├── analysis.py                  # Data analysis engine
-│   └── visualization.py             # Interactive visualization generator
-├── data/                            # Input data
-│   └── eia_california_generation_annual.csv
-└── output/                          # Generated results
-    ├── analysis_results.json        # Statistical analysis results
-    ├── processed_data.csv           # Clean processed data
-    └── *_interactive.html           # Interactive visualizations
-```
-
 ## Analysis Results
 
 ### Key Findings (2014-2024)
