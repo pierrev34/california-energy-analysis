@@ -6,14 +6,6 @@ A comprehensive analysis of California's electricity generation transition, feat
 
 This project analyzes California's electricity generation data from 2014-2024, tracking the evolution of the state's energy mix across different power generation categories. The analysis reveals trends in renewable energy adoption, fossil fuel dependency changes, and overall generation capacity growth.
 
-### Key Features
-
-- Data Analysis: Comprehensive statistical analysis of EIA electricity generation data
-- Interactive Visualizations: Beautiful, interactive charts using Altair
-- Actionable Insights: Detailed findings and policy implications
-- Clean Architecture: Well-organized, maintainable codebase
-- Automated Pipeline: One-command execution for complete analysis
-
 ## Quick Start
 
 ### Prerequisites
