@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """
-California Energy Analysis - Simple Version
+California Energy Analysis - Fuel-Based Analysis
 
-This script analyzes California's electricity generation data from 2014-2024.
-It loads the data, creates some basic charts, and shows key insights.
+This script analyzes California's electricity generation by fuel type from 2014-2024.
+It auto-detects EIA CSV files, processes fuel categories, and generates insights
+about the energy transition with corrected visualizations.
 
 Usage: python main.py
 
-Author: California Energy Project
+Features:
+- Auto-detects CSV in data/ folder
+- Cleans and aggregates fuel categories
+- Exports data, analysis results, and corrected stacked area chart
+- Provides concise summary of key energy transition trends
+
+Author: California Energy Analysis Project
 """
 
 import pandas as pd
@@ -22,9 +29,9 @@ from analysis import CaliforniaEnergyAnalyzer
 
 
 def main():
-    """Main function to run the energy analysis."""
-    print("Starting California Energy Analysis")
-    print("=" * 40)
+    """Main function to run the fuel-based energy analysis."""
+    print("🔋 California Energy Analysis (2014-2024)")
+    print("=" * 50)
 
     # Locate a data CSV automatically (prefer a fuel-based export if present)
     data_dir = Path("data")
@@ -53,16 +60,16 @@ def main():
     # Create analyzer and run analysis
     analyzer = CaliforniaEnergyAnalyzer(str(data_path))
 
-    print("Loading and analyzing data...")
+    print("\n📊 Loading and analyzing fuel data...")
     analyzer.load_data()
     analyzer.process_data()
     stats = analyzer.calculate_summary_statistics()
     insights = analyzer.generate_insights()
 
     # Show basic results
-    print("\n" + "=" * 40)
-    print("ANALYSIS RESULTS")
-    print("=" * 40)
+    print("\n" + "=" * 50)
+    print("🔍 ANALYSIS RESULTS")
+    print("=" * 50)
 
     print("\nOverall:")
     print(f"  Total energy generated: {stats['overall']['total_generation_mwh']:,.0f} MWh")
@@ -78,13 +85,15 @@ def main():
         print(f"  • {insight}")
 
     # Save results and generate chart
-    print("\nSaving results...")
+    print("\n💾 Exporting results and generating chart...")
     analyzer.export_results('json')
     analyzer.export_results('csv')
     analyzer.generate_stacked_area_png("output/energy_mix.png")
 
-    print("\nDone! Check the 'output' folder for results.")
-    print("Open output/processed_data.csv to see the data.")
+    print("\n✅ Analysis complete! Check the 'output' folder for:")
+    print("   • processed_data.csv - Clean fuel data by year")
+    print("   • analysis_results.json - Complete statistical analysis")  
+    print("   • energy_mix.png - Corrected stacked area chart")
 
 
 if __name__ == "__main__":

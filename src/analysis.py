@@ -1,10 +1,17 @@
 """
-California Energy Analysis - Simple Version
+California Energy Analysis - Fuel-Based Analysis
 
-This module provides basic analysis of California's electricity generation data.
-It loads CSV data and calculates simple statistics.
+This module provides comprehensive analysis of California's electricity generation 
+by fuel type from 2014-2024. It automatically parses EIA CSV exports, cleans 
+fuel categories, and generates insights about the energy transition.
 
-Author: California Energy Project
+Features:
+- Auto-detects CSV structure and year columns
+- Maps raw fuel descriptions to clean parent categories  
+- Computes growth rates, totals, and volatility by fuel
+- Exports corrected stacked area charts and data summaries
+
+Author: California Energy Analysis Project
 """
 
 import pandas as pd
@@ -15,7 +22,10 @@ import json
 
 class CaliforniaEnergyAnalyzer:
     """
-    A simple analyzer for California electricity generation data.
+    Comprehensive analyzer for California electricity generation by fuel type.
+    
+    Handles EIA CSV parsing, fuel category cleaning, statistical analysis,
+    and visualization generation for California's energy transition analysis.
     """
 
     def __init__(self, data_path="data/eia_california_generation_annual.csv"):

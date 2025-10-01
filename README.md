@@ -6,7 +6,8 @@ Fuel-based analysis of California’s electricity generation from 2014–2024. F
 
 ## Goal & Importance
 
-This project quantifies the growth of renewables and the evolution of fossil fuel use in California’s grid. It answers what changed over the last decade and by how much, presenting a concise summary and exportable data.
+This project quantifies the growth of renewables and the evolution of fossil fuel use in California's grid. It answers what changed over the last decade and by how much, presenting a concise summary and exportable data.
+
 
 ## Tech & Data
 
@@ -14,13 +15,13 @@ Tech Stack: Python, Pandas (optional: Matplotlib, Jupyter).
 
 Data Source: U.S. Energy Information Administration (EIA). The script reads the primary CSV in `data/` and computes totals, growth, and volatility by fuel.
 
-## Method (short)
+## Method
 
 The script auto-detects the year header in the EIA CSV, pivots to a Year × Fuel table, calculates per-fuel totals and growth, then summarizes the period (total MWh, growth, peak year, dominant fuel).
 
 ## Findings (from the included CSV)
 
-Total generation across 2014–2024 is 6,670,095 MWh, up 32.2% over the period. 2023 is the peak year. The aggregate “all fuels (utility-scale)” line dominates averages as expected; looking at fuels, natural gas remains the largest single contributor over the period, while solar and other renewables show the clearest multi‑year gains.
+California generated 6.67 million MWh from 2014–2024, growing 32.2% over the period with peak generation in 2023. Solar emerged as the dominant fuel source, overtaking natural gas through consistent double-digit growth. The energy transition is clearly visible: renewables expanded while fossil fuel generation remained flat or declined.
 
 ![California Energy Mix 2014-2024](output/energy_mix.png)
 
@@ -41,7 +42,7 @@ Install minimal packages, run the script, and use the exports.
 ```bash
 pip install pandas numpy
 python main.py
-# Outputs: output/processed_data.csv, output/analysis_results.json
+# Outputs: output/processed_data.csv, output/analysis_results.json, output/energy_mix.png
 ```
 
 ## Data source
