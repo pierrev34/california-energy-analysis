@@ -1,0 +1,31 @@
+"Net generation for California"
+"https://www.eia.gov/electricity/data/browser/#/topic/0?agg=0,2,1&fuel=vvvvu&geo=000000000004&sec=g&freq=A&start=2014&end=2024&ctype=linechart&ltype=pin&rtype=s&pin=&rse=0&maptype=0"
+"Wed Oct 01 2025 15:56:47 GMT-0700 (Pacific Daylight Time)"
+"Source: U.S. Energy Information Administration"
+"description","units","source key","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023","2024"
+"Net generation for California","thousand megawatthours",,,,,,,,,,,,
+"All sectors",,"ELEC.GEN..A",,,,,,,,,,,
+"All sectors : all fuels (utility-scale)","thousand megawatthours","ELEC.GEN.ALL-CA-99.A",198808,196704,196963,206147,195466,201784,193084,197165,203384,216629,214131
+"All sectors : coal","thousand megawatthours","ELEC.GEN.COW-CA-99.A",805,298,319,291,281,240,290,294,252,209,246
+"All sectors : petroleum liquids","thousand megawatthours","ELEC.GEN.PEL-CA-99.A",47,85,92,46,69,51,44,77,155,75,57
+"All sectors : petroleum coke","thousand megawatthours","ELEC.GEN.PC-CA-99.A",19,0,84,0,0,0,0,0,0,0,0
+"All sectors : natural gas","thousand megawatthours","ELEC.GEN.NG-CA-99.A",120426,116140,97074,88350,89805,85841,92047,97427,96372,94390,86244
+"All sectors : other gases","thousand megawatthours","ELEC.GEN.OOG-CA-99.A",1333,1549,1427,1408,1454,1476,1538,1369,1412,1382,1208
+"All sectors : nuclear","thousand megawatthours","ELEC.GEN.NUC-CA-99.A",16986,18505,18908,17901,18214,16165,16259,16477,17593,17718,18379
+"All sectors : conventional hydroelectric","thousand megawatthours","ELEC.GEN.HYC-CA-99.A",16531,13808,28942,42363,26331,38355,21377,14678,17644,32381,30549
+"All sectors : other renewables","thousand megawatthours","ELEC.GEN.AOR-CA-99.A",41917,45395,49712,54544,58632,58921,60871,66585,69916,71348,78435
+"All sectors : wind","thousand megawatthours","ELEC.GEN.WND-CA-99.A",12992,12230,13509,12823,14024,13735,13583,15177,14638,14019,14818
+"All sectors : all utility-scale solar","thousand megawatthours","ELEC.GEN.SUN-CA-99.A",9932,14814,18807,24353,26985,28332,30273,34864,38789,41001,47821
+"All sectors : utility-scale photovoltaic","thousand megawatthours","ELEC.GEN.SPV-CA-99.A",8336,12522,16386,21989,24527,26094,28053,32834,36706,39100,45775
+"All sectors : utility-scale thermal","thousand megawatthours","ELEC.GEN.STH-CA-99.A",1595,2293,2421,2364,2458,2237,2220,2030,2083,1901,2045
+"All sectors : geothermal","thousand megawatthours","ELEC.GEN.GEO-CA-99.A",12102,11883,11457,11560,11677,10914,11367,11128,11181,11266,10913
+"All sectors : biomass","thousand megawatthours","ELEC.GEN.BIO-CA-99.A",6891,6468,5939,5808,5946,5941,5649,5416,5307,5062,4884
+"All sectors : wood and wood-derived fuels","thousand megawatthours","ELEC.GEN.WWW-CA-99.A",3977,3584,3029,2967,3123,3218,3034,2842,2891,2721,2692
+"All sectors : other biomass","thousand megawatthours","ELEC.GEN.WAS-CA-99.A",2913,2884,2910,2841,2824,2723,2615,2574,2417,2341,2191
+"All sectors : hydro-electric pumped storage","thousand megawatthours","ELEC.GEN.HPS-CA-99.A",-105,113,-259,407,-149,-31,-37,-317,-155,-393,-100
+"All sectors : other","thousand megawatthours","ELEC.GEN.OTH-CA-99.A",848,812,666,836,829,765,695,576,196,-482,-886
+"All sectors : all solar","thousand megawatthours","ELEC.GEN.TSN-CA-99.A",14606,20829,27037,34958,39904,43493,47680,54712,62910,68978,"--"
+"All sectors : small-scale solar photovoltaic","thousand megawatthours","ELEC.GEN.DPV-CA-99.A",4674,6014,8230,10605,12919,15162,17407,19849,24121,27977,"--"
+"All sectors : all utility-scale solar","thousand megawatthours","ELEC.GEN.SUN-CA-99.A",9932,14814,18807,24353,26985,28332,30273,34864,38789,41001,47821
+"All sectors : utility-scale photovoltaic","thousand megawatthours","ELEC.GEN.SPV-CA-99.A",8336,12522,16386,21989,24527,26094,28053,32834,36706,39100,45775
+"All sectors : utility-scale thermal","thousand megawatthours","ELEC.GEN.STH-CA-99.A",1595,2293,2421,2364,2458,2237,2220,2030,2083,1901,2045

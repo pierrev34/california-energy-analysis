@@ -77,9 +77,11 @@ def main():
     for insight in insights['key_findings'][:3]:
         print(f"  • {insight}")
 
-    # Save results
+    # Save results and generate chart
     print("\nSaving results...")
+    analyzer.export_results('json')
     analyzer.export_results('csv')
+    analyzer.generate_stacked_area_png("output/energy_mix.png")
 
     print("\nDone! Check the 'output' folder for results.")
     print("Open output/processed_data.csv to see the data.")

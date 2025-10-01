@@ -40,59 +40,58 @@ class CaliforniaEnergyAnalyzer:
         """
         print("Loading California energy data...")
 
-        # Read the CSV file without assuming a header
-        df = pd.read_csv(self.data_path, header=None)
-
-        # Find the header row containing year labels (e.g., 2014, 2015, ...)
+        # Find header line index by scanning raw text (robust to metadata lines)
         header_idx = None
-        years: list[int] = []
-        for i, row in df.iterrows():
-            candidate_years = []
-            for col in range(3, len(row)):
-                val = row.iloc[col]
-                if pd.notna(val) and str(val).strip().isdigit():
-                    candidate_years.append(int(str(val).strip()))
-            # Require at least 3 year columns to be confident it's the header
-            if len(candidate_years) >= 3:
+        with open(self.data_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        for i, line in enumerate(lines):
+            if '"description"' in line and '"units"' in line and '"source key"' in line:
                 header_idx = i
-                years = candidate_years
                 break
 
-        if header_idx is None or not years:
-            print("Error: Could not find a header row with years in the CSV file")
+        if header_idx is None:
+            print("Error: Could not find header row with description/units/source key")
             return None
 
-        # Data rows start after the header
-        data_start = header_idx + 1
+        # Read again with the detected header row
+        df_full = pd.read_csv(self.data_path, header=header_idx, engine='python')
 
-        data_rows = []
+        # Identify year columns (numeric column names)
+        year_cols = []
+        for col in df_full.columns:
+            try:
+                if str(col).strip().isdigit():
+                    year_cols.append(int(str(col).strip()))
+            except Exception:
+                continue
+
+        if not year_cols:
+            print("Error: No year columns found in CSV header")
+            return None
+
+        # Build matrix: rows = years, columns = fuel categories (from description)
         categories = []
-        for i in range(data_start, len(df)):
-            row = df.iloc[i]
-            # Expect a non-empty category in column 0
-            if pd.notna(row.iloc[0]) and str(row.iloc[0]).strip():
-                category = str(row.iloc[0]).strip()
+        data_rows = []
+        for _, row in df_full.iterrows():
+            desc = str(row.get('description', '')).strip()
+            if not desc:
+                continue
+            values = []
+            non_zero = False
+            for y in year_cols:
+                val = row.get(str(y), None)
+                try:
+                    num = float(val)
+                except Exception:
+                    num = 0.0
+                if num != 0.0:
+                    non_zero = True
+                values.append(num)
+            if non_zero:
+                categories.append(desc)
+                data_rows.append(values)
 
-                # Extract values aligned with the detected years
-                values = []
-                for j in range(len(years)):
-                    col = 3 + j
-                    if col < len(row):
-                        val = row.iloc[col]
-                        try:
-                            values.append(float(val)) if pd.notna(val) and val != '' else values.append(0.0)
-                        except Exception:
-                            values.append(0.0)
-                    else:
-                        values.append(0.0)
-
-                # Only add rows that have at least one non-zero value
-                if any(v != 0.0 for v in values):
-                    categories.append(category)
-                    data_rows.append(values)
-
-        # Build a tidy dataframe with years as index and fuel categories as columns
-        df_data = pd.DataFrame(data_rows, columns=years)
+        df_data = pd.DataFrame(data_rows, columns=year_cols)
         df_data['Category'] = categories
         df_data = df_data.set_index('Category').T
         df_data.index.name = 'Year'
@@ -119,6 +118,8 @@ class CaliforniaEnergyAnalyzer:
 
         # Convert year to integer
         processed['Year'] = processed['Year'].astype(int)
+        # Ensure numeric and fill missing
+        processed['Generation_MWh'] = pd.to_numeric(processed['Generation_MWh'], errors='coerce').fillna(0.0)
 
         # Calculate yearly totals
         yearly_totals = processed.groupby('Year')['Generation_MWh'].sum()
@@ -160,13 +161,25 @@ class CaliforniaEnergyAnalyzer:
 
         # Per-category statistics
         for category in self.processed_data['Category'].unique():
-            cat_data = self.processed_data[self.processed_data['Category'] == category]
+            cat_data = self.processed_data[self.processed_data['Category'] == category].copy()
+            # drop rows where both year or value are missing
+            cat_data = cat_data.dropna(subset=['Year', 'Generation_MWh'])
+            if cat_data.empty:
+                continue
+            total_gen = cat_data['Generation_MWh'].sum()
+            if total_gen == 0:
+                continue
+            # robust peak/lowest year lookup
+            peak_idx = cat_data['Generation_MWh'].idxmax()
+            low_idx = cat_data['Generation_MWh'].idxmin()
+            peak_year_val = int(cat_data.loc[peak_idx, 'Year'])
+            low_year_val = int(cat_data.loc[low_idx, 'Year'])
 
             cat_stats = {
-                'total_generation': cat_data['Generation_MWh'].sum(),
+                'total_generation': total_gen,
                 'average_yearly': cat_data['Generation_MWh'].mean(),
-                'peak_year': int(cat_data.loc[cat_data['Generation_MWh'].idxmax(), 'Year']),
-                'lowest_year': int(cat_data.loc[cat_data['Generation_MWh'].idxmin(), 'Year']),
+                'peak_year': peak_year_val,
+                'lowest_year': low_year_val,
                 'volatility': cat_data['Generation_MWh'].std(),
                 'growth_rate': self._calculate_growth_rate(cat_data)
             }
@@ -301,6 +314,132 @@ class CaliforniaEnergyAnalyzer:
             output_file = "output/processed_data.csv"
             self.processed_data.to_csv(output_file, index=False)
             print(f"  Data exported to {output_file}")
+
+    # ---------- Helper methods for cleaned fuel view and chart ----------
+    def _clean_fuel_name(self, raw: str) -> str:
+        """Map raw EIA description strings to cleaner parent fuel names.
+
+        Heuristics:
+        - Strip the leading "All sectors : " prefix if present
+        - Collapse detailed solar rows to parent "All Utility-Scale Solar"
+        - Keep aggregate "all fuels (utility-scale)" as-is for context
+        - Title-case simple fuels (e.g., Natural Gas)
+        """
+        name = raw.strip()
+        if name.lower().startswith("all sectors : "):
+            name = name[len("all sectors : ") :].strip()
+
+        lower = name.lower()
+        if "all fuels (utility-scale)" in lower:
+            return "All Fuels (Utility-Scale)"
+
+        # Solar hierarchy: collapse to one parent
+        if "all utility-scale solar" in lower:
+            return "All Utility-Scale Solar"
+        if "utility-scale photovoltaic" in lower or "photovoltaic" in lower:
+            return "All Utility-Scale Solar"
+        if "solar thermal" in lower:
+            return "All Utility-Scale Solar"
+        if "all solar" in lower:
+            return "All Utility-Scale Solar"
+
+        # Make common fuels nicer
+        mapping = {
+            "natural gas": "Natural Gas",
+            "coal": "Coal",
+            "nuclear": "Nuclear",
+            "other renewables": "Other Renewables",
+            "conventional hydroelectric": "Hydroelectric",
+            "other gases": "Other Gases",
+            "petroleum liquids": "Petroleum Liquids",
+            "petroleum coke": "Petroleum Coke",
+        }
+        for key, val in mapping.items():
+            if key in lower:
+                return val
+        # Fallback: basic cleanup/case
+        return name.replace("  ", " ").strip().title()
+
+    def aggregate_fuels(self) -> pd.DataFrame:
+        """Return aggregated totals by cleaned fuel name across years.
+
+        Returns a dataframe with columns: Fuel, Total_MWh, Growth_Rate.
+        """
+        if self.processed_data is None:
+            self.process_data()
+
+        df = self.processed_data.copy()
+        df["CleanFuel"] = df["Category"].apply(self._clean_fuel_name)
+
+        # Aggregate per year per clean fuel to avoid double counting within a year
+        yearly = (
+            df.groupby(["Year", "CleanFuel"], as_index=False)["Generation_MWh"].sum()
+        )
+
+        # Totals over period
+        totals = yearly.groupby("CleanFuel")["Generation_MWh"].sum().rename("Total_MWh")
+
+        # Build simple growth per fuel
+        growth_list = {}
+        for fuel, grp in yearly.groupby("CleanFuel"):
+            grp_sorted = grp.sort_values("Year")
+            first = grp_sorted["Generation_MWh"].iloc[0]
+            last = grp_sorted["Generation_MWh"].iloc[-1]
+            years = len(grp_sorted)
+            if first > 0 and years > 1:
+                gr = ((last / first) ** (1 / (years - 1)) - 1) * 100
+            else:
+                gr = 0.0
+            growth_list[fuel] = gr
+
+        out = (
+            totals.to_frame()
+            .assign(Growth_Percent=lambda s: s.index.map(lambda k: growth_list.get(k, 0.0)))
+            .reset_index()
+            .rename(columns={"CleanFuel": "Fuel"})
+            .sort_values("Total_MWh", ascending=False)
+        )
+        return out
+
+    def generate_stacked_area_png(self, output_path: str = "output/energy_mix.png") -> None:
+        """Create a stacked area chart of generation by cleaned fuel and save PNG."""
+        import matplotlib.pyplot as plt
+
+        if self.processed_data is None:
+            self.process_data()
+
+        df = self.processed_data.copy()
+        df["CleanFuel"] = df["Category"].apply(self._clean_fuel_name)
+
+        # CRITICAL: Remove aggregate totals to avoid stacking total with parts
+        df_fuels = df[df["CleanFuel"] != "All Fuels (Utility-Scale)"].copy()
+        
+        # Pivot to Year x Fuel matrix (MWh) - individual fuels only
+        pivot = (
+            df_fuels.groupby(["Year", "CleanFuel"])['Generation_MWh']
+              .sum()
+              .unstack(fill_value=0)
+              .sort_index()
+        )
+
+        # Keep top 6 individual fuels by total, group rest as "Other"
+        totals = pivot.sum(axis=0).sort_values(ascending=False)
+        keep = totals.head(6).index.tolist()
+        plot_df = pivot[keep].copy()
+        if len(totals) > len(keep):
+            plot_df["Other"] = pivot.drop(columns=keep, errors='ignore').sum(axis=1)
+
+        plt.figure(figsize=(12, 7))
+        ax = plot_df.plot.area(colormap='tab10', alpha=0.8)
+        plt.ylabel("Generation (Thousand MWh)")
+        plt.xlabel("Year")
+        plt.title("California Energy Mix by Fuel Type (2014–2024)")
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.tight_layout()
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(output_path, dpi=160, bbox_inches='tight')
+        plt.close()
+        print(f"  Stacked area chart saved to {output_path}")
 
     def print_analysis_summary(self):
         """Print a simple summary of the analysis."""
