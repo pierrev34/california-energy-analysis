@@ -1,0 +1,13 @@
+"Net generation for California"
+"https://www.eia.gov/electricity/data/browser/#/topic/0?agg=0,1,2&fuel=g&geo=000000000004&sec=e0o&freq=A&start=2014&end=2024&ctype=linechart&ltype=pin&rtype=s&maptype=0&rse=0&pin="
+"Wed Oct 01 2025 15:12:00 GMT-0700 (Pacific Daylight Time)"
+"Source: U.S. Energy Information Administration"
+"description","units","source key","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023","2024"
+"Net generation for California","thousand megawatthours",,,,,,,,,,,,
+"All fuels (utility-scale)",,"ELEC.GEN.ALL-CA-99.A",,,,,,,,,,,
+"All fuels (utility-scale) : all sectors",,"ELEC.GEN.ALL-CA-99.A",,,,,,,,,,,
+"All fuels (utility-scale) : electric power","thousand megawatthours","ELEC.GEN.ALL-CA-98.A",180821,179304,180403,189764,179120,185395,176864,181318,188366,202437,200063
+"All fuels (utility-scale) : electric utility","thousand megawatthours","ELEC.GEN.ALL-CA-1.A",71037,71150,81156,90422,75239,82940,67891,62190,65373,77633,76855
+"All fuels (utility-scale) : independent power producers","thousand megawatthours","ELEC.GEN.ALL-CA-94.A",109784,108154,99247,99342,103882,102455,108973,119127,122993,124804,123208
+"All fuels (utility-scale) : electric utility non-cogen","thousand megawatthours","ELEC.GEN.ALL-CA-2.A",89577,90907,82583,83476,88972,89218,96892,106631,110744,113254,113446
+"All fuels (utility-scale) : electric utility cogen","thousand megawatthours","ELEC.GEN.ALL-CA-3.A",20208,17247,16664,15865,14910,13238,12081,12496,12249,11550,9762

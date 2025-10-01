@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-bbbc0f259a94d612dfb83bd71075ef04"}, "mark": {"type": "bar"}, "encoding": {"color": {"field": "Category", "legend": null, "type": "nominal"}, "tooltip": [{"field": "Category", "title": "Category", "type": "nominal"}, {"field": "Generation_MWh", "format": ",.0f", "title": "Total Generation (MWh)", "type": "quantitative"}], "x": {"field": "Category", "sort": "-y", "title": "Energy Category", "type": "nominal"}, "y": {"field": "Generation_MWh", "title": "Total Generation (thousand MWh)", "type": "quantitative"}}, "height": 400, "title": "Total California Electricity Generation by Category (2014-2024)", "width": 600, "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "datasets": {"data-bbbc0f259a94d612dfb83bd71075ef04": [{"Category": "Electric Power", "Generation_MWh": 2043855}, {"Category": "Electric Utility", "Generation_MWh": 821886}, {"Category": "Electric Utility Cogen", "Generation_MWh": 156270}, {"Category": "Electric Utility Non-Cogen", "Generation_MWh": 1065700}, {"Category": "Independent Power Producers", "Generation_MWh": 1221969}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

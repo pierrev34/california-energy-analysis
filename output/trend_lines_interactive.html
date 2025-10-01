@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-14b932bbe19afebed349582188c69388"}, "mark": {"type": "line", "point": true}, "encoding": {"color": {"field": "Category", "legend": {"title": "Energy Category"}, "type": "nominal"}, "tooltip": [{"field": "Year", "title": "Year", "type": "temporal"}, {"field": "Category", "title": "Category", "type": "nominal"}, {"field": "Generation_MWh", "format": ",.0f", "title": "Generation (MWh)", "type": "quantitative"}], "x": {"field": "Year", "title": "Year", "type": "temporal"}, "y": {"field": "Generation_MWh", "title": "Generation (thousand MWh)", "type": "quantitative"}}, "height": 400, "title": "California Electricity Generation Trends (2014-2024)", "width": 800, "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "datasets": {"data-14b932bbe19afebed349582188c69388": [{"Year": "2014-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 180821}, {"Year": "2015-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 179304}, {"Year": "2016-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 180403}, {"Year": "2017-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 189764}, {"Year": "2018-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 179120}, {"Year": "2019-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 185395}, {"Year": "2020-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 176864}, {"Year": "2021-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 181318}, {"Year": "2022-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 188366}, {"Year": "2023-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 202437}, {"Year": "2024-01-01T00:00:00", "Category": "Electric Power", "Generation_MWh": 200063}, {"Year": "2014-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 71037}, {"Year": "2015-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 71150}, {"Year": "2016-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 81156}, {"Year": "2017-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 90422}, {"Year": "2018-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 75239}, {"Year": "2019-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 82940}, {"Year": "2020-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 67891}, {"Year": "2021-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 62190}, {"Year": "2022-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 65373}, {"Year": "2023-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 77633}, {"Year": "2024-01-01T00:00:00", "Category": "Electric Utility", "Generation_MWh": 76855}, {"Year": "2014-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 109784}, {"Year": "2015-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 108154}, {"Year": "2016-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 99247}, {"Year": "2017-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 99342}, {"Year": "2018-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 103882}, {"Year": "2019-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 102455}, {"Year": "2020-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 108973}, {"Year": "2021-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 119127}, {"Year": "2022-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 122993}, {"Year": "2023-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 124804}, {"Year": "2024-01-01T00:00:00", "Category": "Independent Power Producers", "Generation_MWh": 123208}, {"Year": "2014-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 89577}, {"Year": "2015-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 90907}, {"Year": "2016-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 82583}, {"Year": "2017-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 83476}, {"Year": "2018-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 88972}, {"Year": "2019-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 89218}, {"Year": "2020-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 96892}, {"Year": "2021-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 106631}, {"Year": "2022-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 110744}, {"Year": "2023-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 113254}, {"Year": "2024-01-01T00:00:00", "Category": "Electric Utility Non-Cogen", "Generation_MWh": 113446}, {"Year": "2014-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 20208}, {"Year": "2015-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 17247}, {"Year": "2016-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 16664}, {"Year": "2017-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 15865}, {"Year": "2018-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 14910}, {"Year": "2019-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 13238}, {"Year": "2020-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 12081}, {"Year": "2021-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 12496}, {"Year": "2022-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 12249}, {"Year": "2023-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 11550}, {"Year": "2024-01-01T00:00:00", "Category": "Electric Utility Cogen", "Generation_MWh": 9762}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
