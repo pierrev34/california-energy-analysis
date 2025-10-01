@@ -26,12 +26,29 @@ def main():
     print("Starting California Energy Analysis")
     print("=" * 40)
 
-    # Check if data file exists
-    data_path = Path("data/eia_california_generation_annual.csv")
-    if not data_path.exists():
-        print(f"Error: Can't find data file at {data_path}")
-        print("Please download the EIA data file first.")
+    # Locate a data CSV automatically (prefer a fuel-based export if present)
+    data_dir = Path("data")
+    candidates = []
+    if data_dir.exists():
+        # Prefer common EIA naming that indicates net generation by fuel
+        preferred_names = [
+            "Net_generation_for_California.csv",
+            "eia_california_generation_annual.csv",
+        ]
+        for name in preferred_names:
+            p = data_dir / name
+            if p.exists():
+                candidates.append(p)
+        # Fallback: any CSV in data/
+        if not candidates:
+            candidates = sorted(data_dir.glob("*.csv"))
+
+    if not candidates:
+        print("Error: No CSV data found in ./data")
+        print("Place your EIA CSV export in the data/ folder and rerun.")
         return
+
+    data_path = candidates[0]
 
     # Create analyzer and run analysis
     analyzer = CaliforniaEnergyAnalyzer(str(data_path))

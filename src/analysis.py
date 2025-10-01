@@ -33,53 +33,65 @@ class CaliforniaEnergyAnalyzer:
     def load_data(self):
         """
         Load the raw EIA data from CSV file.
+
+        Supports both older EIA CSV exports and the newer format where the
+        header row contains years starting at column index 3, followed by
+        rows where column 0 is the category (fuel type) and columns >=3 are values.
         """
         print("Loading California energy data...")
 
-        # Read the CSV file
+        # Read the CSV file without assuming a header
         df = pd.read_csv(self.data_path, header=None)
 
-        # Find the row with years (where 2014 appears)
-        data_start_row = None
+        # Find the header row containing year labels (e.g., 2014, 2015, ...)
+        header_idx = None
+        years: list[int] = []
         for i, row in df.iterrows():
-            if str(row.iloc[3]).strip() == '2014':
-                data_start_row = i
+            candidate_years = []
+            for col in range(3, len(row)):
+                val = row.iloc[col]
+                if pd.notna(val) and str(val).strip().isdigit():
+                    candidate_years.append(int(str(val).strip()))
+            # Require at least 3 year columns to be confident it's the header
+            if len(candidate_years) >= 3:
+                header_idx = i
+                years = candidate_years
                 break
 
-        if data_start_row is None:
-            print("Error: Could not find data in CSV file")
+        if header_idx is None or not years:
+            print("Error: Could not find a header row with years in the CSV file")
             return None
 
-        # Get years from header
-        header_row = df.iloc[data_start_row - 1]
-        years = []
-        for col in range(3, len(header_row)):
-            if pd.notna(header_row.iloc[col]) and str(header_row.iloc[col]).strip().isdigit():
-                years.append(int(header_row.iloc[col]))
+        # Data rows start after the header
+        data_start = header_idx + 1
 
-        # Get data rows
         data_rows = []
         categories = []
-        for i in range(data_start_row, len(df)):
+        for i in range(data_start, len(df)):
             row = df.iloc[i]
+            # Expect a non-empty category in column 0
             if pd.notna(row.iloc[0]) and str(row.iloc[0]).strip():
                 category = str(row.iloc[0]).strip()
-                categories.append(category)
 
+                # Extract values aligned with the detected years
                 values = []
-                for col in range(3, len(years) + 3):
-                    val = row.iloc[col]
-                    if pd.notna(val) and val != '':
+                for j in range(len(years)):
+                    col = 3 + j
+                    if col < len(row):
+                        val = row.iloc[col]
                         try:
-                            values.append(float(val))
-                        except:
+                            values.append(float(val)) if pd.notna(val) and val != '' else values.append(0.0)
+                        except Exception:
                             values.append(0.0)
                     else:
                         values.append(0.0)
 
-                data_rows.append(values)
+                # Only add rows that have at least one non-zero value
+                if any(v != 0.0 for v in values):
+                    categories.append(category)
+                    data_rows.append(values)
 
-        # Create dataframe
+        # Build a tidy dataframe with years as index and fuel categories as columns
         df_data = pd.DataFrame(data_rows, columns=years)
         df_data['Category'] = categories
         df_data = df_data.set_index('Category').T
@@ -193,12 +205,16 @@ class CaliforniaEnergyAnalyzer:
             'recommendations': []
         }
 
-        # Simple key findings
+        # Simple key findings (fuel-focused, data-driven)
+        dominant = stats['trends']['dominant_category']
+        peak_year = stats['overall']['peak_year']
+        peak_val = self.raw_data.loc[peak_year].sum()
+
         insights['key_findings'] = [
-            f"California's electricity generation grew {stats['trends']['overall_growth_rate']:.1f}% from {stats['trends']['period']}",
-            f"Total generation reached {stats['overall']['total_generation_mwh']:,.0f} MWh over the analyzed period",
-            f"The {stats['trends']['dominant_category']} category was the largest energy source",
-            f"Peak generation occurred in {stats['overall']['peak_year']} with {self.raw_data.loc[stats['overall']['peak_year']].sum():,.0f} MWh"
+            f"Net generation grew {stats['trends']['overall_growth_rate']:.1f}% from {stats['trends']['period']}",
+            f"Total generation over the period: {stats['overall']['total_generation_mwh']:,.0f} MWh",
+            f"Most influential fuel category on average: {dominant}",
+            f"Peak total generation in {peak_year}: {peak_val:,.0f} MWh"
         ]
 
         # Category insights
@@ -217,17 +233,36 @@ class CaliforniaEnergyAnalyzer:
                 'total_contribution': cat_stats['total_generation']
             })
 
-        insights['notable_trends'] = [
-            "Independent Power Producers showed steady growth",
-            "Electric Utility Cogen experienced decline",
-            "Electric Power remained the dominant category"
-        ]
+        # Notable trends (computed): top growth, top decline, most volatile
+        by_growth = sorted(
+            ((c, v['growth_rate']) for c, v in stats['by_category'].items()),
+            key=lambda x: x[1], reverse=True
+        )
+        top_grow = by_growth[0] if by_growth else (None, 0)
+        by_decline = sorted(
+            ((c, v['growth_rate']) for c, v in stats['by_category'].items()),
+            key=lambda x: x[1]
+        )
+        top_decline = by_decline[0] if by_decline else (None, 0)
+
+        insights['notable_trends'] = []
+        if top_grow[0] is not None:
+            insights['notable_trends'].append(
+                f"Fastest growth: {top_grow[0]} ({top_grow[1]:+.1f}%)"
+            )
+        if top_decline[0] is not None:
+            insights['notable_trends'].append(
+                f"Largest decline: {top_decline[0]} ({top_decline[1]:+.1f}%)"
+            )
+        insights['notable_trends'].append(
+            f"Most volatile: {stats['trends']['most_volatile_category']}"
+        )
 
         self.analysis_results['insights'] = insights
         return insights
 
     def _calculate_growth_rate(self, category_data):
-        """Calculate simple growth rate for a category."""
+        """Calculate simple growth rate for a category over the period."""
         first_value = category_data['Generation_MWh'].iloc[0]
         last_value = category_data['Generation_MWh'].iloc[-1]
         years = len(category_data)
